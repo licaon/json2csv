@@ -25,65 +25,72 @@ In your project's Gruntfile, add a section named `json2csv` to the data object p
 ```js
 grunt.initConfig({
   json2csv: {
+
+    //this applies to when you want to convert a JSON to a specific type of CSV
     options: {
-      // Task-specific options go here.
+        wrapper: '"',
+        delimiter: ','
     },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
+
+    //this in an exmaple
+    convert2json: {
+        expand: true,
+        flatten: true,
+        src: ['test/fixtures/{,*/}*.csv'],
+        dest: 'tmp/default_options',
+        ext: '.json'
+    }
+  }
 });
 ```
 
 ### Options
 
-#### options.separator
+#### options.wrapper
 Type: `String`
-Default value: `',  '`
+Default value: `'"'`
 
-A string value that is used to do something with whatever.
+A string value that is used wrap keys and values.
 
-#### options.punctuation
+#### options.delimiter
 Type: `String`
-Default value: `'.'`
+Default value: `','`
 
-A string value that is used to do something else with whatever else.
+A string value that is used to separate the keys from the values.
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+1. Convert to CSV
+    This plugin I've created for a specific file format that i needed.
+    For example if you have a simple JSON:
+    ```js
+    {
+        "line1": "value1",
+        "line2": "value2"
+    }
+    ```
 
-```js
-grunt.initConfig({
-  json2csv: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
+    the exported file will look like this, assuming you are using the default options:
+    ```csv
+    "line1","value1"
+    "line2","value2"
+    ```
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+2. Convert to JSON
+    From the same specific CSV format file
+    ```csv
+    "line1","value1"
+    "line2","value2"
+    ```
 
-```js
-grunt.initConfig({
-  json2csv: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+    It will be converted in a simple JSON file:
+    ```js
+    {
+        "line1": "value1",
+        "line2": "value2"
+    }
+    ```
 
 ## Release History
-_(Nothing yet)_
+0.1.1 First stable version
+0.1.0 First version

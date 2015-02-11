@@ -8,43 +8,78 @@
 
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+    var path = require('path');
+    var async = require('async');
+    var csv = require('csv');
 
-  grunt.registerMultiTask('json2csv', 'Convert json to csv, and vice versa in a specific way', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
+    grunt.registerMultiTask('json2csv', 'Simple JSON and CSV converter', function () {
+
+        // Tell grunt this task is asynchronous.
+        var done = this.async();
+
+        var options = this.options({
+            wrapper: '"',
+            delimiter: ','
+        });
+
+        async.forEach(this.files, function (f, next) {
+
+            grunt.file.defaultEncoding = 'utf8';
+
+            var saveToFile = function (data) {
+                // Write the destination file.
+                grunt.file.write(f.dest, data);
+                grunt.log.ok('converted ' + f.src + ' to ' + f.dest);
+                next();
+            };
+
+            if (f.src.length < 1) {
+                grunt.log.warn('Destination not written because no source files were found.');
+                next();
+                return;
+            }
+
+            var srcFiles = f.src.map(grunt.file.read).join(grunt.util.normalizelf(grunt.util.linefeed)),
+                srcExt = options.type || path.extname(f.src[0]),
+                data = srcFiles,
+                convertedData = '';
+
+            function  parseCSVData(i){
+                csv.parse(data[i], function (err, elem) {
+                    if (i + emptyData === data.length - 1) {
+                        delimiter = '';
+                    }
+                    convertedData += '\t"' + elem[0][0] + '":"' + elem[0][1].replace(/"/g, '\\"') + '"' + delimiter + '\r\n';
+                }).on('end', function () {
+                    if (delimiter === '') {
+                        convertedData += "}";
+                        saveToFile(convertedData);
+                    }
+                });
+            }
+
+            if (srcExt === ".json") {
+                data = JSON.parse(data);
+                for (var key in data) {
+                    convertedData += options.wrapper + key + options.wrapper + options.delimiter + options.wrapper + data[key].replace(/"/g, '""') + options.wrapper + '\r\n';
+                }
+                saveToFile(convertedData);
+            } else if (srcExt === ".csv") {
+                var delimiter = ',', emptyData = 0, notEmptyData = 0;
+                data = data.split('\n');
+                convertedData = "{\r\n";
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] === "") {
+                        emptyData++;
+                    } else {
+                        notEmptyData++;
+                    }
+                    parseCSVData(i);
+                }
+            }
+        },done);
     });
-
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
-
-      // Handle options.
-      src += options.punctuation;
-
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
-
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
-    });
-  });
 
 };
