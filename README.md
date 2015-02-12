@@ -1,6 +1,6 @@
 # grunt-json2csv
 
-> Convert json to csv, and vice versa in a specific way
+> Converts JSON to CSV, and CSV to JSON. It only supports the format below
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -46,22 +46,22 @@ grunt.initConfig({
 
 ### Options
 
-#### options.wrapper
-Type: `String`
+#### options.wrapper  
+Type: `String`  
 Default value: `'"'`
 
 A string value that is used wrap keys and values.
 
 #### options.delimiter
-Type: `String`
+Type: `String`  
 Default value: `','`
 
 A string value that is used to separate the keys from the values.
 
 ### Usage Examples
 
-1. Convert to CSV
-    This plugin I've created for a specific file format that i needed.
+1. Convert to CSV  
+    This plugin I've created for a specific file format that i needed.  
     For example if you have a simple JSON:
     ```js
     {
@@ -76,7 +76,7 @@ A string value that is used to separate the keys from the values.
     "line2","value2"
     ```
 
-2. Convert to JSON
+2. Convert to JSON  
     From the same specific CSV format file
     ```csv
     "line1","value1"
@@ -92,5 +92,6 @@ A string value that is used to separate the keys from the values.
     ```
 
 ## Release History
-0.1.1 First stable version
+0.1.2 Update readme
+0.1.1 First stable version  
 0.1.0 First version
